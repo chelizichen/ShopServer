@@ -145,7 +145,7 @@ const onClose = () => {
   left: 0;
   height: 56px;
   width: 100%;
-  background: #fff;
+  background: #FF9966;
   border-bottom: 1px solid #cedce4;
   padding-left: 48px;
   z-index: 16;

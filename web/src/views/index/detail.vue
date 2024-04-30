@@ -1,14 +1,14 @@
 <template>
   <div class="detail">
-    <Header/>
+    <Header />
 
     <div class="detail-content">
       <div class="detail-content-top">
-        <div style="position: relative;">
+        <div style="position: relative">
           <div class="thing-infos-view">
             <div class="thing-infos">
               <div class="thing-img-box">
-                <img :src="detailData.cover"/>
+                <img :src="detailData.cover" />
               </div>
               <div class="thing-info-box">
                 <div class="thing-state">
@@ -18,7 +18,7 @@
                 <h1 class="thing-name">{{ detailData.title }}</h1>
                 <span>
                   <span class="a-price-symbol">¥</span>
-                  <span class="a-price">{{detailData.price}}</span>
+                  <span class="a-price">{{ detailData.price }}</span>
                 </span>
                 <div class="translators flex-view" style="">
                   <span>分类：</span>
@@ -37,7 +37,7 @@
             <div class="thing-counts hidden-sm">
               <div class="count-item flex-view pointer" @click="addToWish()">
                 <div class="count-img">
-                  <img :src="WantIcon">
+                  <img :src="WantIcon" />
                 </div>
                 <div class="count-box flex-view">
                   <div class="count-text-box">
@@ -50,7 +50,7 @@
               </div>
               <div class="count-item flex-view pointer" @click="collect()">
                 <div class="count-img">
-                  <img :src="RecommendIcon">
+                  <img :src="RecommendIcon" />
                 </div>
                 <div class="count-box flex-view">
                   <div class="count-text-box">
@@ -63,7 +63,7 @@
               </div>
               <div class="count-item flex-view" @click="share()">
                 <div class="count-img">
-                  <img :src="ShareIcon">
+                  <img :src="ShareIcon" />
                 </div>
                 <div class="count-box flex-view">
                   <div class="count-text-box">
@@ -71,7 +71,7 @@
                   </div>
                   <div class="count-num-box">
                     <span class="num-text"></span>
-                    <img :src="WeiboShareIcon" class="mg-l">
+                    <img :src="WeiboShareIcon" class="mg-l" />
                   </div>
                 </div>
               </div>
@@ -83,41 +83,51 @@
         <div class="thing-content-view flex-view">
           <div class="main-content">
             <div class="order-view main-tab">
-          <span class="tab"
-                :class="selectTabIndex===index? 'tab-select':''"
-                v-for="(item,index) in tabData"
+              <span
+                class="tab"
+                :class="selectTabIndex === index ? 'tab-select' : ''"
+                v-for="(item, index) in tabData"
                 :key="index"
-                @click="selectTab(index)">
-            {{ item }}
-          </span>
-              <span :style="{left: tabUnderLeft + 'px'}" class="tab-underline"></span>
+                @click="selectTab(index)"
+              >
+                {{ item }}
+              </span>
+              <span :style="{ left: tabUnderLeft + 'px' }" class="tab-underline"></span>
             </div>
 
             <!--简介-->
-            <div class="thing-intro" :class="selectTabIndex <= 0? '':'hide'">
+            <div class="thing-intro" :class="selectTabIndex <= 0 ? '' : 'hide'">
               <p class="text" style="">{{ detailData.description }}</p>
             </div>
 
             <!--评论-->
-            <div class="thing-comment" :class="selectTabIndex > 0? '':'hide'">
+            <div class="thing-comment" :class="selectTabIndex > 0 ? '' : 'hide'">
               <div class="title">发表新的评论</div>
               <div class="publish flex-view">
-                <img :src="AvatarIcon" class="mine-img">
-                <input placeholder="说点什么..." class="content-input" ref="commentRef">
+                <img :src="AvatarIcon" class="mine-img" />
+                <input placeholder="说点什么..." class="content-input" ref="commentRef" />
                 <button class="send-btn" @click="sendComment()">发送</button>
               </div>
               <div class="tab-view flex-view">
                 <div class="count-text">共有{{ commentData.length }}条评论</div>
                 <div class="tab-box flex-view" v-if="commentData.length > 0">
-                  <span :class="sortIndex === 0? 'tab-select': ''" @click="sortCommentList('recent')">最新</span>
+                  <span
+                    :class="sortIndex === 0 ? 'tab-select' : ''"
+                    @click="sortCommentList('recent')"
+                    >最新</span
+                  >
                   <div class="line"></div>
-                  <span :class="sortIndex === 1? 'tab-select': ''" @click="sortCommentList('hot')">热门</span>
+                  <span
+                    :class="sortIndex === 1 ? 'tab-select' : ''"
+                    @click="sortCommentList('hot')"
+                    >热门</span
+                  >
                 </div>
               </div>
               <div class="comments-list">
                 <div class="comment-item" v-for="item in commentData">
                   <div class="flex-item flex-view">
-                    <img :src="AvatarIcon" class="avator">
+                    <img :src="AvatarIcon" class="avator" />
                     <div class="person">
                       <div class="name">{{ item.username }}</div>
                       <div class="time">{{ item.commentTime }}</div>
@@ -139,202 +149,219 @@
                 </div>
               </div>
             </div>
-
-          </div>
-          <div class="recommend" style="">
-            <div class="title">热门推荐</div>
-            <div class="things">
-              <div class="thing-item thing-item" v-for="item in recommendData" @click="handleDetail(item)">
-                <div class="img-view">
-                  <img :src="item.cover"></div>
-                <div class="info-view">
-                  <h3 class="thing-name">{{ item.title.substring(0, 12)}}</h3>
-                  <span>
-                    <span class="a-price-symbol">¥</span>
-                    <span class="a-price">{{item.price}}</span>
-                  </span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
     </div>
-
-    <Footer/>
+    <div class="recommend" style="">
+      <div class="title">热门推荐</div>
+      <div class="things">
+        <div
+          class="thing-item thing-item"
+          v-for="item in recommendData"
+          @click="handleDetail(item)"
+        >
+          <div class="img-view">
+            <img :src="item.cover" />
+          </div>
+          <div class="info-view">
+            <h3 class="thing-name">{{ item.title.substring(0, 12) }}</h3>
+            <span>
+              <span class="a-price-symbol">¥</span>
+              <span class="a-price">{{ item.price }}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <Footer />
   </div>
 </template>
 <script setup>
-import {message} from "ant-design-vue";
-import Header from '/@/views/index/components/header.vue'
-import Footer from '/@/views/index/components/footer.vue'
-import AddIcon from '/@/assets/images/add.svg';
-import WantIcon from '/@/assets/images/want-read-hover.svg';
-import RecommendIcon from '/@/assets/images/recommend-hover.svg';
-import ShareIcon from '/@/assets/images/share-icon.svg';
-import WeiboShareIcon from '/@/assets/images/wb-share.svg';
-import AvatarIcon from '/@/assets/images/avatar.jpg';
+import { message } from "ant-design-vue";
+import Header from "/@/views/index/components/header.vue";
+import Footer from "/@/views/index/components/footer.vue";
+import AddIcon from "/@/assets/images/add.svg";
+import WantIcon from "/@/assets/images/want-read-hover.svg";
+import RecommendIcon from "/@/assets/images/recommend-hover.svg";
+import ShareIcon from "/@/assets/images/share-icon.svg";
+import WeiboShareIcon from "/@/assets/images/wb-share.svg";
+import AvatarIcon from "/@/assets/images/avatar.jpg";
+import { detailApi, listApi as listThingList } from "/@/api/thing";
 import {
-  detailApi,
-  listApi as listThingList,
-} from '/@/api/thing'
-import {listThingCommentsApi, createApi as createCommentApi, likeApi} from '/@/api/comment'
-import {wishApi} from '/@/api/thingWish'
-import {collectApi} from '/@/api/thingCollect'
-import {BASE_URL} from "/@/store/constants";
-import {useRoute, useRouter} from "vue-router/dist/vue-router";
-import {useUserStore} from "/@/store";
-import {getFormatTime} from "/@/utils";
+  listThingCommentsApi,
+  createApi as createCommentApi,
+  likeApi,
+} from "/@/api/comment";
+import { wishApi } from "/@/api/thingWish";
+import { collectApi } from "/@/api/thingCollect";
+import { BASE_URL } from "/@/store/constants";
+import { useRoute, useRouter } from "vue-router/dist/vue-router";
+import { useUserStore } from "/@/store";
+import { getFormatTime } from "/@/utils";
 
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
 
+let thingId = ref("");
+let detailData = ref({});
+let tabUnderLeft = ref(6);
+let tabData = ref(["简介", "评论"]);
+let selectTabIndex = ref(0);
 
-let thingId = ref('')
-let detailData = ref({})
-let tabUnderLeft = ref(6)
-let tabData = ref(['简介', '评论'])
-let selectTabIndex = ref(0)
+let commentData = ref([]);
+let recommendData = ref([]);
+let sortIndex = ref(0);
+let order = ref("recent"); // 默认排序最新
 
-let commentData = ref([])
-let recommendData = ref([])
-let sortIndex = ref(0)
-let order = ref('recent') // 默认排序最新
+let commentRef = ref();
 
-let commentRef = ref()
+onMounted(() => {
+  thingId.value = route.query.id.trim();
+  getThingDetail();
+  getRecommendThing();
+  getCommentList();
+});
 
-onMounted(()=>{
-  thingId.value = route.query.id.trim()
-  getThingDetail()
-  getRecommendThing()
-  getCommentList()
-})
+const selectTab = (index) => {
+  selectTabIndex.value = index;
+  tabUnderLeft.value = 6 + 54 * index;
+};
 
-const selectTab =(index)=> {
-  selectTabIndex.value = index
-  tabUnderLeft.value = 6 + 54 * index
-}
-
-const getThingDetail =()=> {
-  detailApi({id: thingId.value}).then(res => {
-    detailData.value = res.data
-    detailData.value.cover = BASE_URL + '/shopserver/staticfiles/image/' + detailData.value.cover
-  }).catch(err => {
-    message.error('获取详情失败')
-  })
-}
-const addToWish =()=> {
-  let userId = userStore.user_id
+const getThingDetail = () => {
+  detailApi({ id: thingId.value })
+    .then((res) => {
+      detailData.value = res.data;
+      detailData.value.cover =
+        BASE_URL + "/shopserver/staticfiles/image/" + detailData.value.cover;
+    })
+    .catch((err) => {
+      message.error("获取详情失败");
+    });
+};
+const addToWish = () => {
+  let userId = userStore.user_id;
   if (userId) {
-    wishApi({thingId: thingId.value, userId: userId}).then(res => {
-      message.success(res.msg)
-      getThingDetail()
-    }).catch(err => {
-      console.log('操作失败')
-    })
+    wishApi({ thingId: thingId.value, userId: userId })
+      .then((res) => {
+        message.success(res.msg);
+        getThingDetail();
+      })
+      .catch((err) => {
+        console.log("操作失败");
+      });
   } else {
-    message.warn('请先登录')
+    message.warn("请先登录");
   }
-}
-const collect =()=> {
-  let userId = userStore.user_id
+};
+const collect = () => {
+  let userId = userStore.user_id;
   if (userId) {
-    collectApi({thingId: thingId.value, userId: userId}).then(res => {
-      message.success(res.msg)
-      getThingDetail()
-    }).catch(err => {
-      console.log('收藏失败')
-    })
+    collectApi({ thingId: thingId.value, userId: userId })
+      .then((res) => {
+        message.success(res.msg);
+        getThingDetail();
+      })
+      .catch((err) => {
+        console.log("收藏失败");
+      });
   } else {
-    message.warn('请先登录')
+    message.warn("请先登录");
   }
-}
-const share =()=> {
-  let content = '分享一个非常好玩的网站 ' + window.location.href
-  let shareHref = 'http://service.weibo.com/share/share.php?title=' + content
-  window.open(shareHref)
-}
-const handleOrder =(detailData)=> {
-  console.log(detailData)
-  const userId = userStore.user_id
-  router.push({name: 'confirm',
-    query:
-        {
-          id: detailData.id,
-          title: detailData.title,
-          cover: detailData.cover,
-          price: detailData.price
-        }})
-}
-const getRecommendThing =()=> {
-  listThingList({sort: 'recommend'}).then(res => {
-    res.data.forEach((item, index) => {
-      if (item.cover) {
-        item.cover = BASE_URL + '/shopserver/staticfiles/image/' + item.cover
-      }
+};
+const share = () => {
+  let content = "分享一个非常好玩的网站 " + window.location.href;
+  let shareHref = "http://service.weibo.com/share/share.php?title=" + content;
+  window.open(shareHref);
+};
+const handleOrder = (detailData) => {
+  console.log(detailData);
+  const userId = userStore.user_id;
+  router.push({
+    name: "confirm",
+    query: {
+      id: detailData.id,
+      title: detailData.title,
+      cover: detailData.cover,
+      price: detailData.price,
+    },
+  });
+};
+const getRecommendThing = () => {
+  listThingList({ sort: "recommend" })
+    .then((res) => {
+      res.data.forEach((item, index) => {
+        if (item.cover) {
+          item.cover = BASE_URL + "/shopserver/staticfiles/image/" + item.cover;
+        }
+      });
+      console.log(res);
+      recommendData.value = res.data.slice(0, 6);
     })
-    console.log(res)
-    recommendData.value = res.data.slice(0, 6)
-  }).catch(err => {
-    console.log(err)
-  })
-}
-const handleDetail =(item)=> {
+    .catch((err) => {
+      console.log(err);
+    });
+};
+const handleDetail = (item) => {
   // 跳转新页面
-  let text = router.resolve({name: 'detail', query: {id: item.id}})
-  window.open(text.href, '_blank')
-}
-const sendComment =()=> {
-  console.log(commentRef.value)
-  let text = commentRef.value.value.trim()
-  console.log(text)
+  let text = router.resolve({ name: "detail", query: { id: item.id } });
+  window.open(text.href, "_blank");
+};
+const sendComment = () => {
+  console.log(commentRef.value);
+  let text = commentRef.value.value.trim();
+  console.log(text);
   if (text.length <= 0) {
-    return
+    return;
   }
-  commentRef.value.value = ''
-  let userId = userStore.user_id
+  commentRef.value.value = "";
+  let userId = userStore.user_id;
   if (userId) {
-    createCommentApi({content: text, thingId: thingId.value, userId: userId}).then(res => {
-      getCommentList()
-    }).catch(err => {
-      console.log(err)
-    })
+    createCommentApi({ content: text, thingId: thingId.value, userId: userId })
+      .then((res) => {
+        getCommentList();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   } else {
-    message.warn('请先登录！')
-    router.push({name: 'login'})
+    message.warn("请先登录！");
+    router.push({ name: "login" });
   }
-}
-const like =(commentId)=> {
-  likeApi({id: commentId}).then(res => {
-    getCommentList()
-  }).catch(err => {
-    console.log(err)
-  })
-}
-const getCommentList =()=> {
-  listThingCommentsApi({thingId: thingId.value, order: order.value}).then(res => {
-    res.data.forEach(item => {
-      item.commentTime = getFormatTime(item.commentTime, true)
+};
+const like = (commentId) => {
+  likeApi({ id: commentId })
+    .then((res) => {
+      getCommentList();
     })
-    commentData.value = res.data
-  }).catch(err => {
-    console.log(err)
-  })
-}
-const sortCommentList =(sortType)=> {
-  if (sortType === 'recent') {
-    sortIndex.value = 0
+    .catch((err) => {
+      console.log(err);
+    });
+};
+const getCommentList = () => {
+  listThingCommentsApi({ thingId: thingId.value, order: order.value })
+    .then((res) => {
+      res.data.forEach((item) => {
+        item.commentTime = getFormatTime(item.commentTime, true);
+      });
+      commentData.value = res.data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+const sortCommentList = (sortType) => {
+  if (sortType === "recent") {
+    sortIndex.value = 0;
   } else {
-    sortIndex.value = 1
+    sortIndex.value = 1;
   }
-  order.value = sortType
-  getCommentList()
-}
-
+  order.value = sortType;
+  getCommentList();
+};
 </script>
 <style scoped lang="less">
-
 .hide {
   display: none;
 }
@@ -362,9 +389,9 @@ const sortCommentList =(sortType)=> {
   overflow: hidden;
 
   .thing-infos {
-    -webkit-box-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
+    // -webkit-box-flex: 1;
+    // -ms-flex: 1;
+    // flex: 1;
     display: flex;
   }
 
@@ -385,7 +412,7 @@ const sortCommentList =(sortType)=> {
       width: 64px;
       height: 24px;
       line-height: 24px;
-      background: rgba(70, 132, 226, .1);
+      background: rgba(70, 132, 226, 0.1);
       border-radius: 2px;
       font-weight: 500;
       font-size: 12px;
@@ -425,6 +452,7 @@ const sortCommentList =(sortType)=> {
     text-align: left;
     padding: 0;
     margin: 0;
+    width: 400px;
   }
 
   .thing-state {
@@ -434,7 +462,7 @@ const sortCommentList =(sortType)=> {
     .state {
       font-weight: 500;
       color: #4684e2;
-      background: rgba(70, 132, 226, .1);
+      background: rgba(70, 132, 226, 0.1);
       border-radius: 2px;
       padding: 5px 8px;
       margin-right: 16px;
@@ -449,15 +477,16 @@ const sortCommentList =(sortType)=> {
   .thing-name {
     line-height: 32px;
     margin: 16px 0;
-    color: #0F1111!important;
-    font-size: 15px!important;
-    font-weight: 400!important;
-    font-style: normal!important;
-    text-transform: none!important;
-    text-decoration: none!important;
+    color: #0f1111 !important;
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    text-transform: none !important;
+    text-decoration: none !important;
   }
 
-  .translators, .authors {
+  .translators,
+  .authors {
     line-height: 18px;
     font-size: 14px;
     margin: 8px 0;
@@ -560,7 +589,7 @@ const sortCommentList =(sortType)=> {
 .buy-btn {
   cursor: pointer;
   display: block;
-  background: #4684e2;
+  background: #003366;
   border-radius: 4px;
   text-align: center;
   color: #fff;
@@ -650,16 +679,21 @@ const sortCommentList =(sortType)=> {
     width: 16px;
     height: 4px;
     background: #4684e2;
-    -webkit-transition: left .3s;
-    transition: left .3s;
+    -webkit-transition: left 0.3s;
+    transition: left 0.3s;
   }
 }
 
 .recommend {
   -webkit-box-flex: 0;
   -ms-flex: 0 0 235px;
-  flex: 0 0 235px;
+  // flex: 0 0 235px;
   margin-left: 20px;
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  overflow: scroll;
+  height: 90vh;
 
   .title {
     font-weight: 600;
@@ -687,11 +721,12 @@ const sortCommentList =(sortType)=> {
       cursor: pointer;
 
       .img-view {
-        //background: #f3f3f3;
+        background: #f3f3f3;
         //text-align: center;
+        display: flex;
         height: 200px;
         width: 255px;
-        //border: 1px #f3f3f3 solid;
+        border: 1px #f3f3f3 solid;
 
         img {
           height: 200px;
@@ -704,18 +739,18 @@ const sortCommentList =(sortType)=> {
       }
 
       .info-view {
-        //background: #f6f9fb;
+        background: #f6f9fb;
         overflow: hidden;
         padding: 0 16px;
         .thing-name {
           line-height: 32px;
           margin-top: 12px;
-          color: #0F1111!important;
-          font-size: 15px!important;
-          font-weight: 400!important;
-          font-style: normal!important;
-          text-transform: none!important;
-          text-decoration: none!important;
+          color: #0f1111 !important;
+          font-size: 15px !important;
+          font-weight: 400 !important;
+          font-style: normal !important;
+          text-transform: none !important;
+          text-decoration: none !important;
         }
 
         .price {
@@ -739,7 +774,6 @@ const sortCommentList =(sortType)=> {
         }
       }
     }
-
   }
 }
 
@@ -844,7 +878,6 @@ const sortCommentList =(sortType)=> {
   }
 }
 
-
 .comments-list {
   .comment-item {
     .flex-item {
@@ -929,7 +962,7 @@ const sortCommentList =(sortType)=> {
   font-size: 12px;
 }
 .a-price {
-  color: #0F1111;
-  font-size:21px;
+  color: #0f1111;
+  font-size: 21px;
 }
 </style>
