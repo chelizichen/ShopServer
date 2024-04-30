@@ -3,4 +3,7 @@ server.servlet.context-path: /shopserver
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
-    
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

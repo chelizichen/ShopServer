@@ -1,13 +1,19 @@
 package com.gk.study.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.gk.study.entity.Classification;
 import com.gk.study.entity.Thing;
 import com.gk.study.entity.ThingTag;
+import com.gk.study.mapper.ClassificationMapper;
 import com.gk.study.mapper.ThingMapper;
 import com.gk.study.mapper.ThingTagMapper;
 import com.gk.study.service.ThingService;
+import com.gk.study.sgrid.xt.CollaborativeFactor;
+import com.gk.study.sgrid.xt.CollaborativeFilterImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +25,57 @@ import java.util.stream.Collectors;
 
 @Service
 public class ThingServiceImpl extends ServiceImpl<ThingMapper, Thing> implements ThingService {
+    public CollaborativeFilterImpl collaborativeFilter;
+
+    public void InitCollaborativeFilterImpl() {
+        CollaborativeFilterImpl collaborativeFilter = new CollaborativeFilterImpl();
+        collaborativeFilter.WithDefaultLength(7);
+        collaborativeFilter.WithLimitMaxFactoryWeight(70.0);
+        ArrayList<CollaborativeFactor> collaborativeFactories = new ArrayList<>();
+        QueryWrapper<Classification> queryWrapper = new QueryWrapper<>();
+        List<Classification> classifications = classificationMapper.selectList(queryWrapper);
+        for (Classification classification : classifications) {
+            collaborativeFactories.add(new CollaborativeFactor(0.0, Math.toIntExact(classification.getId()), classification.getTitle()));
+        }
+        collaborativeFilter.WithDefaultFactories(collaborativeFactories);
+        this.collaborativeFilter = collaborativeFilter;
+    }
+
     @Autowired
     ThingMapper mapper;
 
     @Autowired
     ThingTagMapper thingTagMapper;
 
+    @Autowired
+    ClassificationMapper classificationMapper;
+
     @Override
     public List<Thing> getThingList(String keyword, String sort, String c, String tag) {
+        if (this.collaborativeFilter == null) {
+            this.InitCollaborativeFilterImpl();
+        }
+        if (sort != null && (sort.equals("hot") || sort.equals("recommend"))) {
+            List<Thing> things = new ArrayList<>();
+            List<CollaborativeFactor> currentFactories = this.collaborativeFilter.getCurrentFactories();
+            for (CollaborativeFactor currentFactory : currentFactories) {
+                QueryWrapper<Thing> queryWrapper = new QueryWrapper<>();
+                int size = (int) ((currentFactory.getWeight() + 5.0) / 10);
+                System.out.println("size" + size);
+                Page<Thing> page = new Page<>(1, size);
+                System.out.println("curr|" + currentFactory);
+                queryWrapper.eq("classification_id", currentFactory.getType());
+                queryWrapper.orderBy(true, false, "create_time");
+                IPage<Thing> thingPage = mapper.selectPage(page, queryWrapper);
+                things.addAll(thingPage.getRecords());
+                System.out.println("page-size ::" + thingPage.getRecords().size());
+            }
+            for (Thing thing : things) {
+                System.out.println("thing" + thing.title);
+            }
+            return things;
+        }
+
         QueryWrapper<Thing> queryWrapper = new QueryWrapper<>();
 
         // 搜索
@@ -39,7 +88,7 @@ public class ThingServiceImpl extends ServiceImpl<ThingMapper, Thing> implements
             } else if (sort.equals("hot") || sort.equals("recommend")) {
                 queryWrapper.orderBy(true, false, "pv");
             }
-        }else {
+        } else {
             queryWrapper.orderBy(true, false, "create_time");
         }
 
@@ -113,7 +162,13 @@ public class ThingServiceImpl extends ServiceImpl<ThingMapper, Thing> implements
 
     @Override
     public Thing getThingById(String id) {
-        return mapper.selectById(id);
+        Thing thing = mapper.selectById(id);
+        Long classificationId = thing.getClassificationId();
+        if (this.collaborativeFilter == null) {
+            this.InitCollaborativeFilterImpl();
+        }
+        this.collaborativeFilter.addFactoryWeight(new CollaborativeFactor(0.0, Math.toIntExact(classificationId), ""));
+        return thing;
     }
 
     // 心愿数加1
