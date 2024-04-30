@@ -10,10 +10,18 @@
     </select>
 
     <select id="getPopularClassification" resultType="java.util.HashMap">
-        select B.title, count(B.title) as count
-        from b_thing A join B_classification B on A.classification_id = B.id
-        group by B.title
-        order by count desc limit 5;
+        select B.title,
+               count(B.title) as count
+        from
+            b_thing A
+            join b_classification B
+        on
+            A.classification_id = B.id
+        group by
+            B.title
+        order by
+            count desc
+            limit 5
     </select>
 
     <select id="getWebVisitData" parameterType="java.lang.String" resultType="com.gk.study.entity.VisitData">
