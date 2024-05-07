@@ -47,6 +47,7 @@ import Header from '/@/views/index/components/header.vue'
 import {message} from "ant-design-vue";
 import WxPayIcon from '/@/assets/images/wx-pay-icon.svg';
 import AliPayIcon from '/@/assets/images/ali-pay-icon.svg';
+import {updateApi} from "/@/api/order";
 
 const route = useRoute();
 
@@ -59,7 +60,12 @@ onMounted(() => {
 })
 
 const handlePay = () => {
-  message.warn('暂无支付功能')
+  const id = route.query.order_id
+  if(!id){
+    return message.error("无效的订单！")
+  }
+  updateApi({id})
+  message.success('支付成功')
 }
 const formatDate = (time, format = 'YY-MM-DD hh:mm:ss') => {
   const date = new Date(time)

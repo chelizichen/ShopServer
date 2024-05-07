@@ -35,7 +35,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public void updateOrder(Order order) {
-        mapper.updateById(order);
+        Order order1 = mapper.selectById(order.id);
+        order1.setStatus("2");
+        mapper.updateById(order1);
     }
 
     @Override

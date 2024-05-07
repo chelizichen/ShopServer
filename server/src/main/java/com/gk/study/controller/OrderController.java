@@ -27,16 +27,16 @@ public class OrderController {
     OrderService service;
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public APIResponse list(){
-        List<Order> list =  service.getOrderList();
+    public APIResponse list() {
+        List<Order> list = service.getOrderList();
 
         return new APIResponse(ResponeCode.SUCCESS, "查询成功", list);
     }
 
     // 用户订单
     @RequestMapping(value = "/userOrderList", method = RequestMethod.GET)
-    public APIResponse userOrderList(String userId, String status){
-        List<Order> list =  service.getUserOrderList(userId, status);
+    public APIResponse userOrderList(String userId, String status) {
+        List<Order> list = service.getUserOrderList(userId, status);
         return new APIResponse(ResponeCode.SUCCESS, "查询成功", list);
     }
 
@@ -44,12 +44,12 @@ public class OrderController {
     @Transactional
     public APIResponse create(Order order) throws IOException {
         service.createOrder(order);
-        return new APIResponse(ResponeCode.SUCCESS, "创建成功");
+        return new APIResponse(ResponeCode.SUCCESS, "创建成功", order.id);
     }
 
     @Access(level = AccessLevel.ADMIN)
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    public APIResponse delete(String ids){
+    public APIResponse delete(String ids) {
         System.out.println("ids===" + ids);
         // 批量删除
         String[] arr = ids.split(",");

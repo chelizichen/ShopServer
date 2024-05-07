@@ -134,10 +134,9 @@
 <script setup lang="ts">
 import {message} from "ant-design-vue";
 import Header from '/@/views/index/components/header.vue'
-import Footer from '/@/views/index/components/footer.vue'
 import DeleteIcon from '/@/assets/images/delete-icon.svg'
 import {createApi} from '/@/api/order'
-import {listApi as listAddressListApi, createApi as createAddressApi} from '/@/api/address'
+import {createApi as createAddressApi, listApi as listAddressListApi} from '/@/api/address'
 import {useUserStore} from "/@/store";
 
 const router = useRouter();
@@ -199,7 +198,7 @@ const handleAdd = () => {
 };
 
 const handleOk = () => {
-  if(!userStore.user_id){
+  if (!userStore.user_id) {
     message.warn('请先登录')
     return
   }
@@ -207,7 +206,7 @@ const handleOk = () => {
       .then(() => {
         const formData = new FormData()
         formData.append('userId', userStore.user_id)
-        formData.append('def', modal.form.default ? '1':'0')
+        formData.append('def', modal.form.default ? '1' : '0')
         if (modal.form.name) {
           formData.append('name', modal.form.name)
         }
@@ -297,9 +296,9 @@ const handleJiesuan = () => {
   formData.append('receiverPhone', pageData.receiverPhone)
   formData.append('receiverAddress', pageData.receiverAddress)
   console.log(formData)
-  createApi(formData).then(res => {
+  createApi(formData).then(res => { 
     message.success('请支付订单')
-    router.push({'name': 'pay', query: {'amount': pageData.amount}})
+    router.push({'name': 'pay', query: {'amount': pageData.amount, 'order_id': res.data}})
   }).catch(err => {
     message.error(err.msg || '失败')
   })
