@@ -1,35 +1,46 @@
 package com.gk.study.sgrid.pub;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.Yaml;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.Properties;
-import java.util.Set;
 
 @Component
 public class SgridConf implements SgridConfInterface {
+    // Static
+    private final static String SGRID_TARGET_PORT = "SGRID_TARGET_PORT";
+    private final static String SGRID_DEV_CONF = "sgrid.yml";
+
+
+    private final static String SGRID_CONFIG = "SGRID_CONFIG";
+
     public Server server;
     public HashMap<String, String> config = new HashMap<>();
-    static String SGRID_PROD_CONF_PATH = "SGRID_PROD_CONF_PATH";
-    static String SGRID_TARGET_PORT = "SGRID_TARGET_PORT";
-    static String SGRID_DEV_CONF = "sgrid.yml";
 
-    public SgridConf() {
-        this.SetSgridConf();
-        this.SetDBProperty(config.get("mysql-addr"), config.get("mysql-username"), config.get("mysql-password"));
+    private boolean isConfigured = false; // 标志位，表示配置是否已被设置
+
+    @PostConstruct
+    public void init() {
+        if (!isConfigured) {
+            this.SetSgridConf();
+            this.SetDBProperty(config.get("mysql-addr"), config.get("mysql-username"), config.get("mysql-password"));
+            isConfigured = true; // 设置标志位，表示配置已完成
+        }
     }
 
-    private void loadYaml(Resource resource, Properties properties) {
-        YamlPropertiesFactoryBean yamlFactory = new YamlPropertiesFactoryBean();
-        yamlFactory.setResources(resource);
-        yamlFactory.afterPropertiesSet();
-        properties.putAll(yamlFactory.getObject());
+
+    private SgridConf loadDevConf(Resource resource) throws IOException {
+        Yaml yaml = new Yaml();
+        return yaml.loadAs(resource.getInputStream(), SgridConf.class);
+    }
+
+    private SgridConf loadProdConf(String yamlContent) throws IOException {
+        Yaml yaml = new Yaml();
+        return yaml.loadAs(yamlContent, SgridConf.class);
     }
 
     @Override
@@ -42,51 +53,54 @@ public class SgridConf implements SgridConfInterface {
     @Override
     public void SetSgridConf() {
         try {
-            String sgridProdPath = System.getenv(SGRID_PROD_CONF_PATH);
+            String sgridProdConf = System.getenv(SGRID_CONFIG);
             String sgridTargetPort = System.getenv(SGRID_TARGET_PORT);
-            Properties properties = new Properties();
-
-            if (sgridProdPath == null || sgridProdPath.isEmpty()) {
+            if (sgridProdConf == null || sgridProdConf.isEmpty()) {
                 System.out.println("run dev ::  " + SGRID_DEV_CONF);
                 Resource resource = new ClassPathResource(SGRID_DEV_CONF);
-                loadYaml(resource, properties);
+                SgridConf sgridConf = loadDevConf(resource);
+                setServer(sgridConf.server);
+                setConfig(sgridConf.config);
+                System.out.println("server :: " + server);
+                System.out.println("config :: " + config);
             } else {
-                System.out.println("sgridProdPath" + sgridProdPath);
-                Resource resource = new FileSystemResource(sgridProdPath);
-                loadYaml(resource, properties);
-            }
-            this.server = new Server();
-            if (sgridTargetPort == null || sgridTargetPort.isEmpty()) { // 为空 则用默认配置端口
-                this.server.setPort((Integer) properties.get("server.port"));
-            } else {  // 否则 用指定端口
-                this.server.setPort(Integer.valueOf(sgridTargetPort));
-            }
-            this.server.setName(properties.getProperty("server.name", "SgridBootApplication"));
-            this.server.setProtocol(properties.getProperty("server.protocol", "http"));
-            Set<String> strings = properties.stringPropertyNames();
-            String confKey = "config.";
-            System.out.println("strings" + strings);
-            for (String key : strings) {
-                boolean b = key.startsWith(confKey);
-                if (b) {
-                    String property = properties.getProperty(key);
-                    String newKey = key.replace(confKey, "");
-                    config.put(newKey, property);
-                    System.out.println(newKey + " | " + property);
-                }
+                System.out.println("run prod :: " + sgridProdConf);
+                SgridConf sgridConf = loadProdConf(sgridProdConf);
+                setServer(sgridConf.server);
+                setConfig(sgridConf.config);
+                server.setPort(Integer.valueOf(sgridTargetPort));
             }
         } catch (Exception e) {
-            System.out.println("e" + e.toString());
+            System.out.println("Init Sgrid Configuration Error :: " + e);
         }
     }
 
-    @Getter
-    @Setter
-    public static class Server {
-        public Integer port;
-        public String name;
-        public String host;
-        public String protocol;
-        public String language;
+    public void setServer(Server server) {
+        this.server = server;
     }
+
+    public void setConfig(HashMap<String, String> config) {
+        this.config = config;
+    }
+
+
+//    public static void main(String[] args) throws IOException {
+//        String content = "server:\n" +
+//                "  name: SgirdCloud\n" +
+//                "  host: 127.0.0.1\n" +
+//                "  port: 15411\n" +
+//                "  protocol: http\n" +
+//                "  language: node\n" +
+//                "config:\n" +
+//                "  db_master:  root:123456@tcp(127.0.0.1:3306)/sgrid?charset=utf8&parseTime=true\n" +
+//                "  db_slave: root:123456@tcp(127.0.0.1:3306)/sgrid?charset=utf8&parseTime=true";
+//
+//        SgridConf sgridConf = new SgridConf();
+//        Properties properties = new Properties();
+//        SgridConf sgridConf1 = sgridConf.loadProdConf(content);
+//        sgridConf.config = sgridConf1.config;
+//        sgridConf.server = sgridConf1.server;
+//        System.out.println("sgridConf.config || " + sgridConf.config);
+//        System.out.println("sgridConf.server || " + sgridConf.server);
+//    }
 }
