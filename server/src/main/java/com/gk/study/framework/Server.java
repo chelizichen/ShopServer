@@ -1,4 +1,4 @@
-package com.gk.study.sgrid.pub;
+package com.gk.study.framework;
 
 
 public class Server {
@@ -46,5 +46,16 @@ public class Server {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    @Override
+    public String toString() {
+        return "[Sgrid-Java] Server{" +
+                "port=" + port +
+                ", name='" + name + '\'' +
+                ", host='" + host + '\'' +
+                ", protocol='" + protocol + '\'' +
+                ", language='" + language + '\'' +
+                '}';
     }
 }

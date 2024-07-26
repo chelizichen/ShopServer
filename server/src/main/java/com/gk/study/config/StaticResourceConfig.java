@@ -1,10 +1,10 @@
 package com.gk.study.config;
 
+import com.gk.study.framework.SgridConf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import com.gk.study.sgrid.pub.SgridConf;
 
 @Configuration
 public class StaticResourceConfig extends WebMvcConfigurerAdapter {
